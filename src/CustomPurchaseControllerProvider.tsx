@@ -70,14 +70,20 @@ export const CustomPurchaseControllerProvider = ({
       try {
         const result = await controller.onPurchaseRestore()
 
-        SuperwallExpoModule.didRestore({
-          type: result?.type ?? "restored",
-          error: result?.error,
-        })
+        if (result?.type === "failed") {
+          SuperwallExpoModule.didRestore({
+            result: "failed",
+            errorMessage: result?.error || "Unknown error",
+          })
+        } else {
+          SuperwallExpoModule.didRestore({
+            result: "restored",
+          })
+        }
       } catch (error: any) {
         SuperwallExpoModule.didRestore({
-          type: "failed",
-          error: error.message || "Unknown error",
+          result: "failed",
+          errorMessage: error.message || "Unknown error",
         })
       }
     },
